@@ -1,0 +1,12 @@
+(library
+ (name introspect)
+ ;(public_name introspect)
+ (modules introspect)
+ (wrapped false))
+
+(rule
+ (deps select_introspect.sh
+       raw_introspect.mli raw_introspect.ml
+       tag_introspect.mli tag_introspect.ml)
+ (targets introspect.mli introspect.ml)
+ (action (run ./select_introspect.sh)))
