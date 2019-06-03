@@ -1,6 +1,6 @@
 (library
  (name introspect)
- ;(public_name introspect)
+ (public_name ocaml-introspect)
  (modules introspect)
  (wrapped false))
 
