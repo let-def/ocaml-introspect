@@ -45,11 +45,13 @@ let rec format_outcome ppf = function
       | None, [] -> Format.fprintf ppf "%s" name
       | None, [Orecord _ as payload] ->
         Format.fprintf ppf "%s @[<hov>%a@]" name format_outcome payload
-      | None, xs ->
+      | None, (x :: xs) ->
         let format_elements ppf xs =
-          List.iter (Format.fprintf ppf "%a;" format_outcome) xs
+          List.iter (Format.fprintf ppf ",@ %a" format_outcome) xs
         in
-        Format.fprintf ppf "%s (@[<hov>%a@])" name format_elements xs
+        Format.fprintf ppf "%s (@[<hov>%a%a@])" name
+          format_outcome x
+          format_elements xs
     end
   | Orecord xs ->
       let format_element ppf (k,v) =
