@@ -118,6 +118,6 @@ let rec var_dump_outcome depth width obj =
 let var_dump_outcome ?approx ?(depth=5) ?(width=80) v =
   var_dump_outcome depth width (lift ?approx (Obj.repr v))
 
-let var_dump v =
-  format_outcome Format.std_formatter (var_dump_outcome v);
-  Format.pp_print_flush Format.std_formatter ()
+let var_dump ?(destination=Format.std_formatter) v =
+  Format.fprintf destination "%a@;%!"
+    format_outcome (var_dump_outcome v)
