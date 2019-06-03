@@ -44,7 +44,6 @@ let fields_of_block f obj =
     (Obj.size obj, fun i -> f i (Obj.field obj i))
 
 let raw_dynval obj =
-  let obj = Obj.repr obj in
   if Obj.is_int obj then
     Int_or_constant (Obj.obj obj, [])
   else
@@ -71,6 +70,6 @@ let raw_dynval obj =
     else
       Unknown
 
-let dynobj = raw_dynval
-let obj x = raw_dynval (lift x)
-let value x = raw_dynval (lift (Obj.repr x))
+let dynobj (_,obj) = raw_dynval obj
+let obj = raw_dynval
+let value x = raw_dynval (Obj.repr x)
