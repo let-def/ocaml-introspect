@@ -53,7 +53,7 @@ let rec var_dump_outcome depth width obj =
     !list
   in
   let fmt_fields f fields = fmt_fields' ~ellipsis:Oellipsis f fields in
-  match Introspect.value obj with
+  match Introspect.dynobj obj with
   | Char c ->
     Ochar c
   | String str ->
