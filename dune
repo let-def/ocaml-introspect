@@ -1,7 +1,7 @@
 (library
  (name introspect)
  (public_name ocaml-introspect)
- (modules introspect)
+ (modules introspect var_dump)
  (wrapped false))
 
 (rule
