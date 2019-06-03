@@ -11,6 +11,18 @@ type outcome =
   | Oellipsis
   | Oother of string
 
+let detect_list fields =
+  let rec aux fields = function
+    | Oconstr ("[]", []) ->
+      Some (List.rev fields)
+    | Oconstr ("::", [field; rest]) ->
+      aux (field :: fields) rest
+    | Oellipsis ->
+      Some (List.rev (Oellipsis :: fields))
+    | _ -> None
+  in
+  aux [] fields
+
 let rec format_outcome ppf = function
   | Ostring x -> Format.fprintf ppf "%S" x
   | Ofloat x -> Format.fprintf ppf "%f" x
@@ -21,13 +33,24 @@ let rec format_outcome ppf = function
         List.iter (Format.fprintf ppf "%a;" format_outcome) xs
       in
       Format.fprintf ppf "@[<hov>[|%a|]@]" format_elements xs
-  | Oconstr (name, []) ->
-      Format.fprintf ppf "%s" name
-  | Oconstr (name, xs) ->
-      let format_elements ppf xs =
-        List.iter (Format.fprintf ppf "%a;" format_outcome) xs
-      in
-      Format.fprintf ppf "%s (@[<hov>%a@])" name format_elements xs
+  | Oconstr (name, fields) as outcome ->
+    begin match detect_list outcome, fields with
+      | Some [], _ -> Format.fprintf ppf "[]"
+      | Some (first :: rest), _ ->
+        let format_tail ppf rest =
+          List.iter (Format.fprintf ppf ";@ %a" format_outcome) rest
+        in
+        Format.fprintf ppf "[@[<hov>%a%a@]]"
+          format_outcome first format_tail rest
+      | None, [] -> Format.fprintf ppf "%s" name
+      | None, [Orecord _ as payload] ->
+        Format.fprintf ppf "%s @[<hov>%a@]" name format_outcome payload
+      | None, xs ->
+        let format_elements ppf xs =
+          List.iter (Format.fprintf ppf "%a;" format_outcome) xs
+        in
+        Format.fprintf ppf "%s (@[<hov>%a@])" name format_elements xs
+    end
   | Orecord xs ->
       let format_element ppf (k,v) =
         Format.fprintf ppf "%s: %a;" k format_outcome v
