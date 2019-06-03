@@ -1,5 +1,5 @@
 #!/bin/sh
-if ocamlc -config | grep 'tagprinter:'; then
+if ocamlc -config | grep 'tag_library: true'; then
   cp tag_introspect.mli introspect.mli
   cp tag_introspect.ml  introspect.ml
 else
